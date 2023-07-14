@@ -18,7 +18,9 @@ const register=async(req,res)=>{
     const data=new userModel({
         name:req.body.name,
         email:req.body.email,
-        password:hashPassword
+        password:hashPassword,
+        adoptionArray:[]
+
     })
     await data.save()
     return res.status(201).json({message:"user registred sucessfully...",data})
@@ -46,4 +48,14 @@ const login=async(req,res)=>{
     }
 }
 
-module.exports={register,login}
+const getAllUser=async(req,res)=>{
+    try{
+        const data=await userModel.find().lean().exec();
+        return res.status(200).json({message:"geted all data",data})
+    }catch(err){
+        return res.status(500).json({meassage:"internal server error..."})
+    }
+}
+
+
+module.exports={register,login,getAllUser}

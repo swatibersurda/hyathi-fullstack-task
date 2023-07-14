@@ -1,11 +1,14 @@
 const mongoose=require("mongoose")
 const express=require("express");
 const connect=require("../src/Config/db")
-const {register,login}=require("../src/Controller/user.controller")
+const {register,login,getAllUser}=require("../src/Controller/user.controller")
+const pokeMonRouter=require("../src/Controller/pokemon.controller")
 const app=express();
 app.use(express.json())
 app.use("/register",register)
 app.use("/login",login)
+app.use("/pokemon",pokeMonRouter)
+app.use("/getalluser",getAllUser)
 app.listen(5000,async(req,res)=>{
     try{
         await connect()
