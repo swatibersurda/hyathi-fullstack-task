@@ -56,6 +56,16 @@ const getAllUser=async(req,res)=>{
         return res.status(500).json({meassage:"internal server error..."})
     }
 }
+// this for geting indivisual user so that can show all adopted pokemon on feeding page.
+const getUserById=async(req,res)=>{
+    try{
+        console.log(req.params.id)
+        const data=await userModel.findById(req.params.id).populate("adoptionArray");
+        return res.status(200).json({message:"geted all data",data})
+    }catch(err){
+        return res.status(500).json({meassage:"internal server error..."})
+    }
+}
 
 
-module.exports={register,login,getAllUser}
+module.exports={register,login,getAllUser,getUserById}
