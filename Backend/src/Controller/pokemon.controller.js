@@ -12,13 +12,13 @@ pokeMonRouter.get("/", async (req, res) => {
   }
 });
 // this posting so that can add pokemon to the user who has adopted or inside adoptionArray
+// here post work beacuse adding the 
 pokeMonRouter.post("/", async (req, res) => {
   console.log(req.body.pokemon_id, "kkk");
   // first we will find the user
   let existingUser;
   try {
     existingUser = await userModel.findById(req.body.user_id);
-    //  console.log(existingUser,"existinguserr")
   } catch (err) {
     return console.log(err);
   }
@@ -33,9 +33,10 @@ pokeMonRouter.post("/", async (req, res) => {
     if (checkTwicePokemon) {
       return res
         .status(500)
-        .json({ message: "only single adoption is allowed" });
+        .json({ message: "simlar pokemon can be adopted once" });
     }
   }
+  // else means not adopted once 
   try {
     const pokemon = {
       _id: req.body.pokemon_id,

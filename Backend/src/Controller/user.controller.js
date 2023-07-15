@@ -1,5 +1,6 @@
 const express=require("express");
 const userModel=require("../Model/user.model")
+const pokemonModel=require("../Model/pokemon.model")
 const app=express();
 const bcryptjs=require("bcryptjs");
 const jsonWebToken=require("jsonwebtoken")
@@ -61,11 +62,81 @@ const getUserById=async(req,res)=>{
     try{
         console.log(req.params.id)
         const data=await userModel.findById(req.params.id).populate("adoptionArray");
-        return res.status(200).json({message:"geted all data",data})
+        return res.status(200).json({message:"geted id data",data})
     }catch(err){
         return res.status(500).json({meassage:"internal server error..."})
     }
 }
 
+const adoptionPokemon=async(req,res)=>{
+    console.log(req.body.pokemon_id, "kkk");
+    // first we will find the user
+    let existingUser;
+    try {
+      existingUser = await userModel.findById(req.body.user_id);
+    } catch (err) {
+      return console.log(err);
+    }
+    if (!existingUser) {
+      return res.status(400).json({ message: "user not found" });
+    }
+    let checkTwicePokemon;
+    for (var i = 0; i < existingUser.adoptionArray.length; i++) {
+      checkTwicePokemon = existingUser.adoptionArray[i].equals(
+        req.body.pokemon_id
+      );
+      if (checkTwicePokemon) {
+        return res
+          .status(500)
+          .json({ message: "simlar pokemon can be adopted once" });
+      }
+    }
+    // else means not adopted once 
+    try {
+      const pokemon = {
+        _id: req.body.pokemon_id,
+      };
+      console.log("reaching here.......");
+      existingUser.adoptionArray.push(pokemon);
+      await existingUser.save();
+    } catch (err) {
+      return console.log(err);
+    }
+    return res.status(201).json(existingUser);
+}
 
-module.exports={register,login,getAllUser,getUserById}
+const feedPokemon=async(req,res)=>{
+//need to find that user and then need to find the pokemon id 
+// so that its healthStatus can be increment.
+let existingUser;
+    try {
+      existingUser = await userModel.findById(req.body.user_id);
+    } catch (err) {
+      return console.log(err);
+    }
+    if (!existingUser) {
+      return res.status(400).json({ message: "user not found" });
+    }
+    // need to find the pokemonfrom 
+    // the adoptionArray so that can update its healthStatus.
+    let foundPokemonForFeeding;
+    let found
+    for (var i = 0; i < existingUser.adoptionArray.length; i++) {
+        found = existingUser.adoptionArray[i].equals(
+          req.body.pokemon_id
+        );
+        // means found the pokemon whose healthStatus need to update.
+        if(found){
+            foundPokemonForFeeding=i
+            break;
+        }
+}
+console.log(foundPokemonForFeeding,"pokemonfeeddingg...")
+var t=existingUser.adoptionArray[foundPokemonForFeeding]
+console.log(t,"ttt...")
+// var x=await userModel.updateOne({_id:existingUser},{$inc:{"t.$.heathStatus":+1}})
+var x=await userModel.updateOne({_id:existingUser,"adoptionArray._id":req.body.pokemon_id},{$inc:{"existingUser.adoptionArray.$[foundPokemonForFeeding].healthStatus":1}})
+console.log(x,"docc")
+return res.status(201).json({x})
+}
+module.exports={register,login,getAllUser,getUserById,adoptionPokemon,feedPokemon}
