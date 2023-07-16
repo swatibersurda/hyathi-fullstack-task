@@ -6,7 +6,13 @@ const userSchema=new mongoose.Schema({
     password:{type:String,required:true},
     // making this so that when a user adopt a pokemon so that it can go inside adoptionlist.
     // 1-m relationship
-    adoptionArray:[{type:mongoose.Types.ObjectId,ref:"pokemon",required:true}]
+    adoptionArray:[
+      {
+       healthStatus:{type:Number,default:1}, 
+       pokemon:{type:mongoose.Types.ObjectId,ref:"pokemon",required:true}
+      }
+        
+    ]
 },{
     versionkey:false, 
     timestamps:true

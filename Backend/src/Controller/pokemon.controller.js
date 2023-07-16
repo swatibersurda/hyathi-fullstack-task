@@ -27,9 +27,10 @@ pokeMonRouter.post("/", async (req, res) => {
   }
   let checkTwicePokemon;
   for (var i = 0; i < existingUser.adoptionArray.length; i++) {
-    checkTwicePokemon = existingUser.adoptionArray[i].equals(
+    checkTwicePokemon = existingUser.adoptionArray[1]._id.equals(
       req.body.pokemon_id
     );
+    
     if (checkTwicePokemon) {
       return res
         .status(500)
